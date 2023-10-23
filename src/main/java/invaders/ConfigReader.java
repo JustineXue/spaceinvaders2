@@ -11,28 +11,29 @@ import java.io.IOException;
 import java.sql.Statement;
 
 public class ConfigReader {
-    private static JSONObject gameInfo;
-    private static JSONObject playerInfo;
-    private static JSONArray bunkersInfo;
-    private static JSONArray enemiesInfo;
+    private JSONObject gameInfo;
+    private JSONObject playerInfo;
+    private JSONArray bunkersInfo;
+    private JSONArray enemiesInfo;
 
+    public ConfigReader(){}
 
-    public static void parse(String configPath){
+    public void parse(String configPath){
         JSONParser parser = new JSONParser();
         try {
             JSONObject configObject = (JSONObject) parser.parse(new FileReader(configPath));
 
             // Reading game section
-            gameInfo = (JSONObject) configObject.get("Game");
+            this.gameInfo = (JSONObject) configObject.get("Game");
 
 	        // Reading player section
-            playerInfo = (JSONObject) configObject.get("Player");
+            this.playerInfo = (JSONObject) configObject.get("Player");
 
 			// Reading bunker section
-            bunkersInfo = (JSONArray) configObject.get("Bunkers");
+            this.bunkersInfo = (JSONArray) configObject.get("Bunkers");
 
             // Reading enemies section
-            enemiesInfo = (JSONArray) configObject.get("Enemies");
+            this.enemiesInfo = (JSONArray) configObject.get("Enemies");
         } catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -42,19 +43,19 @@ public class ConfigReader {
 		}
     }
 
-    public static JSONObject getGameInfo() {
-        return gameInfo;
+    public JSONObject getGameInfo() {
+        return this.gameInfo;
     }
 
-    public static JSONObject getPlayerInfo() {
-        return playerInfo;
+    public JSONObject getPlayerInfo() {
+        return this.playerInfo;
     }
 
-    public static JSONArray getBunkersInfo() {
-        return bunkersInfo;
+    public JSONArray getBunkersInfo() {
+        return this.bunkersInfo;
     }
 
-    public static JSONArray getEnemiesInfo() {
-        return enemiesInfo;
+    public JSONArray getEnemiesInfo() {
+        return this.enemiesInfo;
     }
 }
