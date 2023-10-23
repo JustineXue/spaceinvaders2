@@ -2,6 +2,8 @@ package invaders.engine;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 import invaders.ConfigReader;
 import invaders.builder.BunkerBuilder;
@@ -17,6 +19,8 @@ import org.json.simple.JSONObject;
 import invaders.singleton.DifficultyManager;
 import javafx.util.Duration;
 import invaders.factory.EnemyProjectile;
+import invaders.physics.Vector2D;
+import invaders.memento.Memento;
 
 /**
  * This class manages the main loop and logic of the game
@@ -43,6 +47,11 @@ public class GameEngine {
 	private DifficultyManager levelManager = new DifficultyManager();
 	private ConfigReader configReader;
 	private long startTime;
+
+	private List<Enemy> alienList;
+	private List<EnemyProjectile> alienProjectilesList;
+	private List<Enemy> killedAlienList = new ArrayList<Enemy>();
+	private List<EnemyProjectile> killedAlienProjectilesList = new ArrayList<EnemyProjectile>();
 
 	public GameEngine(String config){
 		// Read the config here
@@ -103,6 +112,8 @@ public class GameEngine {
 					if(renderableA.isColliding(renderableB) && (renderableA.getHealth()>0 && renderableB.getHealth()>0)) {
 						renderableA.takeDamage(1);
 						renderableB.takeDamage(1);
+						saveKilled(renderableA);
+						saveKilled(renderableB);
 						calculateScore(renderableA);
 						calculateScore(renderableB);
 					}
@@ -234,5 +245,87 @@ public class GameEngine {
 	}
 
 	public int getScore(){ return this.score; }
+
+	public void saveKilled(Renderable ro){
+		if (ro instanceof Enemy){
+			this.killedAlienList.add((Enemy) ro);
+		} else if (ro instanceof EnemyProjectile){
+			this.killedAlienProjectilesList.add((EnemyProjectile) ro);
+		}
+	}
+
+	public void makeAlienList(){
+		this.alienList = new ArrayList<Enemy>();
+		for (GameObject go: gameObjects){
+			if (go instanceof Enemy){
+				alienList.add((Enemy) go);
+			}
+		}
+	}
+
+
+	public void makeAlienProjectilesList(){
+		this.alienProjectilesList = new ArrayList<EnemyProjectile>();
+		for (GameObject go: gameObjects){
+			if (go instanceof EnemyProjectile){
+				alienProjectilesList.add((EnemyProjectile) go);
+			}
+		}
+	}
+
+	public List<EnemyProjectile> makeSlowProjectilesList(){
+		List<EnemyProjectile> projectiles = new ArrayList<EnemyProjectile>();
+		for (GameObject go: gameObjects){
+			if (go instanceof EnemyProjectile){
+				EnemyProjectile e = (EnemyProjectile) go;
+				if (e.getProjectileStrategyName().equals("Slow")){
+					projectiles.add(e);
+				}
+			}
+		}
+		return projectiles;
+	}
+
+	public List<EnemyProjectile> makeFastProjectilesList(){
+		List<EnemyProjectile> projectiles = new ArrayList<EnemyProjectile>();
+		for (GameObject go: gameObjects){
+			if (go instanceof EnemyProjectile){
+				EnemyProjectile e = (EnemyProjectile) go;
+				if (e.getProjectileStrategyName().equals("Fast")){
+					projectiles.add(e);
+				}
+			}
+		}
+		return projectiles;
+	}
+
+	public void removeSlowProjectiles(){
+		List<EnemyProjectile> projectiles = makeSlowProjectilesList();
+		for (EnemyProjectile p: projectiles){
+			p.takeDamage(1);
+		}
+	}
+
+	public void removeFastProjectiles(){
+		List<EnemyProjectile> projectiles = makeFastProjectilesList();
+		for (EnemyProjectile p: projectiles){
+			p.takeDamage(1);
+		}
+	}
+
+	public void updateAliens(HashMap<Enemy, Vector2D> alienPositionList){
+		makeAlienList();
+		for (Enemy enemy : alienPositionList.keySet()) {
+			if (this.alienList.contains(enemy)){
+				enemy.setPosition(alienPositionList.get(enemy));
+			} else if (this.killedAlienList.contains(enemy)) {
+				enemy.setPosition(alienPositionList.get(enemy));
+				enemy.setLives(1);
+				this.gameObjects.add((GameObject) enemy);
+				this.renderables.add((Renderable) enemy);
+				killedAlienList.remove(enemy);
+			}
+		}
+	}
 
 }

@@ -190,10 +190,12 @@ public class GameWindow {
 
     public void removeSlowProjectiles(){
         System.out.println("CHEAT: Remove Slow Projectiles triggered");
+        this.model.removeSlowProjectiles();
     }
 
     public void removeFastProjectiles(){
         System.out.println("CHEAT: Remove Fast Projectiles triggered");
+        this.model.removeFastProjectiles();
     }
 
 }
