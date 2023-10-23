@@ -15,6 +15,7 @@ import invaders.entities.Player;
 import invaders.rendering.Renderable;
 import org.json.simple.JSONObject;
 import invaders.singleton.DifficultyManager;
+import javafx.util.Duration;
 
 /**
  * This class manages the main loop and logic of the game

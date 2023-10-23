@@ -30,6 +30,8 @@ public class GameWindow {
     private double yViewportOffset = 0.0;
     // private static final double VIEWPORT_MARGIN = 280.0;
 
+    private long startTime;
+
 	public GameWindow(GameEngine model){
         this.model = model;
 		this.width =  model.getGameWidth();
@@ -43,12 +45,15 @@ public class GameWindow {
 
         scene.setOnKeyPressed(keyboardInputHandler::handlePressed);
         scene.setOnKeyReleased(keyboardInputHandler::handleReleased);
-
     }
 
 	public void run() {
-         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(17), t -> this.draw()));
-
+        this.startTime = System.currentTimeMillis();
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(17), t -> {
+            double elapsedTime = getElapsedTime();
+            System.out.printf("Elapsed time: %.0f seconds%n", elapsedTime);
+            this.draw();
+        }));
          timeline.setCycleCount(Timeline.INDEFINITE);
          timeline.play();
     }
@@ -108,4 +113,13 @@ public class GameWindow {
 	public Scene getScene() {
         return scene;
     }
+
+    public double getElapsedTime() {
+        // Calculate and return the elapsed time since the game started
+        long currentTime = System.currentTimeMillis();
+        long elapsedTimeMillis = currentTime - startTime;
+        double elapsedTimeSeconds = (double) elapsedTimeMillis / 1000.0;
+        return elapsedTimeSeconds;
+    }
+
 }
