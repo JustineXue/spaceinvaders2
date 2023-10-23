@@ -40,6 +40,7 @@ public class GameEngine {
 
 	private DifficultyManager levelManager = new DifficultyManager();
 	private ConfigReader configReader;
+	private long startTime;
 
 	public GameEngine(String config){
 		// Read the config here

@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 
+
 import java.util.Map;
 
 public class App extends Application {
@@ -48,7 +49,6 @@ public class App extends Application {
         primaryStage.setTitle("Space Invaders");
         primaryStage.setScene(window.getScene());
         primaryStage.show();
-
         window.run();
     }
 }

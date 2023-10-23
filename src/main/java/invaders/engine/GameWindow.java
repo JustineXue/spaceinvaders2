@@ -16,6 +16,12 @@ import javafx.animation.Timeline;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import org.json.simple.JSONObject;
+import invaders.observer.Subscriber;
+import invaders.observer.TimeSubscriber;
+import invaders.observer.ScoreSubscriber;
+import javafx.scene.text.Text;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 public class GameWindow {
 	private final int width;
@@ -32,6 +38,11 @@ public class GameWindow {
 
     private long startTime;
 
+    private Subscriber timeSubscriber = new TimeSubscriber();
+    private Subscriber scoreSubscriber = new ScoreSubscriber();
+
+    private Text timeText = new Text();
+
 	public GameWindow(GameEngine model){
         this.model = model;
 		this.width =  model.getGameWidth();
@@ -45,14 +56,23 @@ public class GameWindow {
 
         scene.setOnKeyPressed(keyboardInputHandler::handlePressed);
         scene.setOnKeyReleased(keyboardInputHandler::handleReleased);
+
+        timeText = new Text("Time: 00:00");
+        timeText.setX(10); // Adjust X position as needed
+        timeText.setY(30); // Adjust Y position as needed
+        timeText.setFill(Color.WHITE);
+        Font font = Font.font("Arial", 18); // Font family and font size
+        timeText.setFont(font);
+        pane.getChildren().add(timeText);
     }
 
 	public void run() {
         this.startTime = System.currentTimeMillis();
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(17), t -> {
-            double elapsedTime = getElapsedTime();
-            System.out.printf("Elapsed time: %.0f seconds%n", elapsedTime);
+            this.timeSubscriber.update(this);
+            this.updateTime();
             this.draw();
+            System.out.println(this.getTimeDisplay());
         }));
          timeline.setCycleCount(Timeline.INDEFINITE);
          timeline.play();
@@ -107,7 +127,6 @@ public class GameWindow {
         model.getPendingToRemoveRenderable().clear();
 
         entityViews.removeIf(EntityView::isMarkedForDelete);
-
     }
 
 	public Scene getScene() {
@@ -120,6 +139,18 @@ public class GameWindow {
         long elapsedTimeMillis = currentTime - startTime;
         double elapsedTimeSeconds = (double) elapsedTimeMillis / 1000.0;
         return elapsedTimeSeconds;
+    }
+
+    public String getTimeDisplay(){
+        return this.timeSubscriber.getDisplayString();
+    }
+
+    public String getScoreDisplay(){
+        return this.scoreSubscriber.getDisplayString();
+    }
+
+    public void updateTime(){
+        this.timeText.setText(getTimeDisplay());
     }
 
 }

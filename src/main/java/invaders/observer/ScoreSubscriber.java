@@ -1,11 +1,14 @@
 package invaders.observer;
 
-import invaders.engine.GameEngine;
+import invaders.engine.GameWindow;
 
 public class ScoreSubscriber implements Subscriber {
 
+    private int score = 0;
+    private String displayScore;
+
     @Override
-    public void update(GameEngine model) {
+    public void update(GameWindow window) {
         System.out.println("Updating");
         /*
         Logic TBD
@@ -13,4 +16,8 @@ public class ScoreSubscriber implements Subscriber {
 
     }
 
+    @Override
+    public String getDisplayString(){
+        return this.displayScore;
+    }
 }
