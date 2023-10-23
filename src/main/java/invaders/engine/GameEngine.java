@@ -16,6 +16,7 @@ import invaders.rendering.Renderable;
 import org.json.simple.JSONObject;
 import invaders.singleton.DifficultyManager;
 import javafx.util.Duration;
+import invaders.factory.EnemyProjectile;
 
 /**
  * This class manages the main loop and logic of the game
@@ -37,6 +38,7 @@ public class GameEngine {
 	private int gameWidth;
 	private int gameHeight;
 	private int timer = 45;
+	private int score = 0;
 
 	private DifficultyManager levelManager = new DifficultyManager();
 	private ConfigReader configReader;
@@ -101,6 +103,8 @@ public class GameEngine {
 					if(renderableA.isColliding(renderableB) && (renderableA.getHealth()>0 && renderableB.getHealth()>0)) {
 						renderableA.takeDamage(1);
 						renderableB.takeDamage(1);
+						calculateScore(renderableA);
+						calculateScore(renderableB);
 					}
 				}
 			}
@@ -203,5 +207,32 @@ public class GameEngine {
 	public Player getPlayer() {
 		return player;
 	}
+
+	public void calculateScore(Renderable ro){
+		String name = ro.getRenderableObjectName();
+		if (name.equals("Enemy")){
+			Enemy e = (Enemy) ro;
+			String strategyName = e.getProjectileStrategyName();
+			if (strategyName.equals("Slow")){
+				updateScore(3);
+			} else if (strategyName.equals("Fast")){
+				updateScore(4);
+			}
+		} else if (name.equals("EnemyProjectile")){
+			EnemyProjectile e = (EnemyProjectile) ro;
+			String strategyName = e.getProjectileStrategyName();
+			if (strategyName.equals("Slow")){
+				updateScore(1);
+			} else if (strategyName.equals("Fast")){
+				updateScore(2);
+			}
+		} 
+	}
+
+	public void updateScore(int amount){
+		this.score += amount;
+	}
+
+	public int getScore(){ return this.score; }
 
 }

@@ -5,4 +5,6 @@ import invaders.physics.Vector2D;
 
 public interface ProjectileStrategy {
    public void update(Projectile p);
+
+   public String getName();
 }

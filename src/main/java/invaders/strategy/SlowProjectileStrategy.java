@@ -8,4 +8,10 @@ public class SlowProjectileStrategy implements ProjectileStrategy{
         double newYPos = p.getPosition().getY() + 1;
         p.getPosition().setY(newYPos);
     }
+
+    @Override
+    public String getName(){
+        return "Slow";
+    }
 }
+

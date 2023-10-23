@@ -42,6 +42,7 @@ public class GameWindow {
     private Subscriber scoreSubscriber = new ScoreSubscriber();
 
     private Text timeText = new Text();
+    private Text scoreText = new Text();
 
 	public GameWindow(GameEngine model){
         this.model = model;
@@ -57,22 +58,26 @@ public class GameWindow {
         scene.setOnKeyPressed(keyboardInputHandler::handlePressed);
         scene.setOnKeyReleased(keyboardInputHandler::handleReleased);
 
-        timeText = new Text("Time: 00:00");
-        timeText.setX(10); // Adjust X position as needed
-        timeText.setY(30); // Adjust Y position as needed
+        timeText = new Text(10, 30, "Time: 00:00");
         timeText.setFill(Color.WHITE);
-        Font font = Font.font("Arial", 18); // Font family and font size
+        Font font = Font.font("Arial", 18); 
         timeText.setFont(font);
         pane.getChildren().add(timeText);
+
+        scoreText = new Text(width - 90, 30, "Score: 0");
+        scoreText.setFill(Color.WHITE);
+        scoreText.setFont(font);
+        pane.getChildren().add(scoreText);
     }
 
 	public void run() {
         this.startTime = System.currentTimeMillis();
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(17), t -> {
             this.timeSubscriber.update(this);
-            this.updateTime();
+            this.scoreSubscriber.update(this);
             this.draw();
-            System.out.println(this.getTimeDisplay());
+            this.updateTime();
+            this.updateScore();
         }));
          timeline.setCycleCount(Timeline.INDEFINITE);
          timeline.play();
@@ -152,5 +157,11 @@ public class GameWindow {
     public void updateTime(){
         this.timeText.setText(getTimeDisplay());
     }
+
+    public void updateScore(){
+        this.scoreText.setText(getScoreDisplay());
+    }
+
+    public GameEngine getModel(){ return this.model; }
 
 }

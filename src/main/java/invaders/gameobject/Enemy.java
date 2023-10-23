@@ -143,4 +143,6 @@ public class Enemy implements GameObject, Renderable {
         this.projectileStrategy = projectileStrategy;
     }
 
+    public String getProjectileStrategyName(){ return this.projectileStrategy.getName(); }
+
 }

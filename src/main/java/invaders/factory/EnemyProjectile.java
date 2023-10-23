@@ -27,4 +27,6 @@ public class EnemyProjectile extends Projectile{
     public String getRenderableObjectName() {
         return "EnemyProjectile";
     }
+
+    public String getProjectileStrategyName(){ return this.strategy.getName(); }
 }

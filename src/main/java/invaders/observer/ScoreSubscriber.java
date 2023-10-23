@@ -1,6 +1,7 @@
 package invaders.observer;
 
 import invaders.engine.GameWindow;
+import invaders.engine.GameEngine;
 
 public class ScoreSubscriber implements Subscriber {
 
@@ -9,11 +10,9 @@ public class ScoreSubscriber implements Subscriber {
 
     @Override
     public void update(GameWindow window) {
-        System.out.println("Updating");
-        /*
-        Logic TBD
-         */
-
+        GameEngine engine = window.getModel();
+        score = engine.getScore();
+        this.displayScore = "Score: " + score;
     }
 
     @Override
