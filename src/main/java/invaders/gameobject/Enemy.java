@@ -13,6 +13,7 @@ import javafx.scene.image.Image;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.List;
 
 public class Enemy implements GameObject, Renderable {
     private Vector2D position;
@@ -145,4 +146,33 @@ public class Enemy implements GameObject, Renderable {
 
     public String getProjectileStrategyName(){ return this.projectileStrategy.getName(); }
 
+    public void clearProjectiles(GameEngine engine){
+        pendingToDeleteEnemyProjectile.clear();
+        for(Projectile p : enemyProjectile){
+            p.takeDamage(1);
+            engine.getPendingToRemoveGameObject().add(p);
+            engine.getPendingToRemoveRenderable().add(p);
+            pendingToDeleteEnemyProjectile.add(p);
+        }
+        for(Projectile p: pendingToDeleteEnemyProjectile){
+            enemyProjectile.remove(p);
+        }
+    }
+
+    public void addProjectiles(GameEngine engine, List<Vector2D> positions){
+        for (Vector2D po: positions){
+            Projectile p = projectileFactory.createProjectile(new Vector2D(po.getX() + this.image.getWidth() / 2, po.getY() + image.getHeight() + 2),projectileStrategy, projectileImage);
+            enemyProjectile.add(p);
+            engine.getPendingToAddGameObject().add(p);
+            engine.getPendingToAddRenderable().add(p);
+        }
+    }
+
+    public List<Vector2D> getProjectilePositionsList(){
+        List<Vector2D> projectiles = new ArrayList<Vector2D>();
+        for (Projectile p: enemyProjectile){
+            projectiles.add(p.getPosition());
+        }
+        return projectiles;
+    }
 }

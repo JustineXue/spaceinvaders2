@@ -16,6 +16,9 @@ class KeyboardInputHandler {
     private boolean left = false;
     private boolean right = false;
     private Set<KeyCode> pressedKeys = new HashSet<>();
+    private boolean removeSlow = false;
+    private boolean removeFast = false;
+    private boolean undo = false;
 
     private Map<String, MediaPlayer> sounds = new HashMap<>();
 
@@ -51,6 +54,15 @@ class KeyboardInputHandler {
         if (keyEvent.getCode().equals(KeyCode.RIGHT)) {
             right = true;
         }
+        if (keyEvent.getCode().equals(KeyCode.S)){
+            removeSlow = true;
+        }
+        if (keyEvent.getCode().equals(KeyCode.F)){
+            removeFast = true;
+        }
+        if (keyEvent.getCode().equals(KeyCode.U)){
+            undo = true;
+        }
 
         if (left) {
             model.leftPressed();
@@ -58,6 +70,18 @@ class KeyboardInputHandler {
 
         if(right){
             model.rightPressed();
+        }
+
+        if(removeSlow){
+            System.out.println("CHEAT: Remove Slow Projectiles triggered");
+            this.model.removeSlowProjectiles();
+        }
+        if(removeFast){
+            System.out.println("CHEAT: Remove Fast Projectiles triggered");
+            this.model.removeFastProjectiles();
+        }
+        if(undo){
+            System.out.println("Undo triggered");
         }
     }
 
@@ -71,6 +95,15 @@ class KeyboardInputHandler {
         if (keyEvent.getCode().equals(KeyCode.RIGHT)) {
             model.rightReleased();
             right = false;
+        }
+        if (keyEvent.getCode().equals(KeyCode.S)){
+            removeSlow = false;
+        }
+        if (keyEvent.getCode().equals(KeyCode.F)){
+            removeFast = false;
+        }
+        if (keyEvent.getCode().equals(KeyCode.U)){
+            undo = false;
         }
     }
 }

@@ -1,21 +1,22 @@
 package invaders.memento;
 
-import invaders.engine.GameWindow;
+import invaders.engine.GameEngine;
 
 public class Caretaker {
 
     private Memento memento = new Memento();
-    private GameWindow window;
+    private GameEngine model;
 
-    public Caretaker(GameWindow window){
-        this.window = window;
+    public Caretaker(GameEngine model){
+        this.model = model;
     }
 
     public void restore(){
 
     }
 
-    public void saveMemento(){
+    public void saveMemento(Memento m){
+        this.memento = memento;
     }
 
 }

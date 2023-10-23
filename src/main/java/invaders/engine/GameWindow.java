@@ -3,10 +3,8 @@ package invaders.engine;
 import java.util.List;
 import java.util.ArrayList;
 
-import invaders.ConfigReader;
 import invaders.entities.EntityViewImpl;
 import invaders.entities.SpaceBackground;
-import javafx.scene.control.Alert;
 import javafx.util.Duration;
 
 import invaders.entities.EntityView;
@@ -15,14 +13,12 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
-import org.json.simple.JSONObject;
 import invaders.observer.Subscriber;
 import invaders.observer.TimeSubscriber;
 import invaders.observer.ScoreSubscriber;
 import javafx.scene.text.Text;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.control.Button;
 
 public class GameWindow {
 	private final int width;
@@ -37,17 +33,12 @@ public class GameWindow {
     private double yViewportOffset = 0.0;
     // private static final double VIEWPORT_MARGIN = 280.0;
 
-    private long startTime;
-
     private Subscriber timeSubscriber = new TimeSubscriber();
     private Subscriber scoreSubscriber = new ScoreSubscriber();
 
     private Text timeText = new Text();
     private Text scoreText = new Text();
-
-    private Button undoButton = new Button("Undo");
-    private Button removeSlowButton = new Button("Remove Slow Projectiles");
-    private Button removeFastButton = new Button("Remove Fast Projectiles");
+    private Text instructionsText = new Text();
 
 	public GameWindow(GameEngine model){
         this.model = model;
@@ -74,24 +65,15 @@ public class GameWindow {
         scoreText.setFont(font);
         pane.getChildren().add(scoreText);
 
-        undoButton.setLayoutX(width - 140); // X position
-        undoButton.setLayoutY(10); // Y position
-        undoButton.setOnAction(e -> undo());
-        pane.getChildren().add(undoButton);
-
-        removeSlowButton.setLayoutX(110); // X position
-        removeSlowButton.setLayoutY(10); // Y position
-        removeSlowButton.setOnAction(e -> removeSlowProjectiles());
-        pane.getChildren().add(removeSlowButton);
-
-        removeFastButton.setLayoutX(270); // X position
-        removeFastButton.setLayoutY(10); // Y position
-        removeFastButton.setOnAction(e -> removeFastProjectiles());
-        pane.getChildren().add(removeFastButton);
+        Font fontSmall = Font.font("Arial", 13); 
+        instructionsText = new Text(115, 30, "S: Remove Slow Projectiles | F: Remove Fast Projectiles | U: Undo");
+        instructionsText.setFill(Color.YELLOW);
+        instructionsText.setFont(fontSmall);
+        pane.getChildren().add(instructionsText);
     }
 
 	public void run() {
-        this.startTime = System.currentTimeMillis();
+        this.model.setStartTime(System.currentTimeMillis());
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(17), t -> {
             this.timeSubscriber.update(this);
             this.scoreSubscriber.update(this);
@@ -158,14 +140,6 @@ public class GameWindow {
         return scene;
     }
 
-    public double getElapsedTime() {
-        // Calculate and return the elapsed time since the game started
-        long currentTime = System.currentTimeMillis();
-        long elapsedTimeMillis = currentTime - startTime;
-        double elapsedTimeSeconds = (double) elapsedTimeMillis / 1000.0;
-        return elapsedTimeSeconds;
-    }
-
     public String getTimeDisplay(){
         return this.timeSubscriber.getDisplayString();
     }
@@ -183,19 +157,5 @@ public class GameWindow {
     }
 
     public GameEngine getModel(){ return this.model; }
-
-    public void undo(){
-        System.out.println("Undo triggered");
-    }
-
-    public void removeSlowProjectiles(){
-        System.out.println("CHEAT: Remove Slow Projectiles triggered");
-        this.model.removeSlowProjectiles();
-    }
-
-    public void removeFastProjectiles(){
-        System.out.println("CHEAT: Remove Fast Projectiles triggered");
-        this.model.removeFastProjectiles();
-    }
 
 }

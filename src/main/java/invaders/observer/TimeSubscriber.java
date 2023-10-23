@@ -1,5 +1,6 @@
 package invaders.observer;
 
+import invaders.engine.GameEngine;
 import invaders.engine.GameWindow;
 
 public class TimeSubscriber implements Subscriber{
@@ -13,7 +14,8 @@ public class TimeSubscriber implements Subscriber{
 
     @Override
     public void update(GameWindow window) {
-        this.elapsedTime = window.getElapsedTime();
+        GameEngine engine = window.getModel();
+        this.elapsedTime = engine.getElapsedTime();
         this.displayTime = "Time: " + formatElapsedTime(elapsedTime);
     }
 
