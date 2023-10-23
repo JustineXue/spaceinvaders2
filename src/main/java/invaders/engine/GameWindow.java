@@ -22,6 +22,7 @@ import invaders.observer.ScoreSubscriber;
 import javafx.scene.text.Text;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.control.Button;
 
 public class GameWindow {
 	private final int width;
@@ -44,6 +45,10 @@ public class GameWindow {
     private Text timeText = new Text();
     private Text scoreText = new Text();
 
+    private Button undoButton = new Button("Undo");
+    private Button removeSlowButton = new Button("Remove Slow Projectiles");
+    private Button removeFastButton = new Button("Remove Fast Projectiles");
+
 	public GameWindow(GameEngine model){
         this.model = model;
 		this.width =  model.getGameWidth();
@@ -60,14 +65,29 @@ public class GameWindow {
 
         timeText = new Text(10, 30, "Time: 00:00");
         timeText.setFill(Color.WHITE);
-        Font font = Font.font("Arial", 18); 
+        Font font = Font.font("Arial", 16); 
         timeText.setFont(font);
         pane.getChildren().add(timeText);
 
-        scoreText = new Text(width - 90, 30, "Score: 0");
+        scoreText = new Text(width - 80, 30, "Score: 0");
         scoreText.setFill(Color.WHITE);
         scoreText.setFont(font);
         pane.getChildren().add(scoreText);
+
+        undoButton.setLayoutX(width - 140); // X position
+        undoButton.setLayoutY(10); // Y position
+        undoButton.setOnAction(e -> undo());
+        pane.getChildren().add(undoButton);
+
+        removeSlowButton.setLayoutX(110); // X position
+        removeSlowButton.setLayoutY(10); // Y position
+        removeSlowButton.setOnAction(e -> removeSlowProjectiles());
+        pane.getChildren().add(removeSlowButton);
+
+        removeFastButton.setLayoutX(270); // X position
+        removeFastButton.setLayoutY(10); // Y position
+        removeFastButton.setOnAction(e -> removeFastProjectiles());
+        pane.getChildren().add(removeFastButton);
     }
 
 	public void run() {
@@ -163,5 +183,17 @@ public class GameWindow {
     }
 
     public GameEngine getModel(){ return this.model; }
+
+    public void undo(){
+        System.out.println("Undo triggered");
+    }
+
+    public void removeSlowProjectiles(){
+        System.out.println("CHEAT: Remove Slow Projectiles triggered");
+    }
+
+    public void removeFastProjectiles(){
+        System.out.println("CHEAT: Remove Fast Projectiles triggered");
+    }
 
 }
