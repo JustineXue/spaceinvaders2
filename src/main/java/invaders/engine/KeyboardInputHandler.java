@@ -82,6 +82,7 @@ class KeyboardInputHandler {
         }
         if(undo){
             System.out.println("Undo triggered");
+            this.model.restoreMemento();
         }
     }
 

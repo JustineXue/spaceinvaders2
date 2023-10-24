@@ -30,8 +30,12 @@ public class Memento {
     }
 
     public int getScore(){ return this.score; }
+
     public double getTime(){ return this.time; }
+
     public Map<Enemy, Vector2D> getAlienPositionList(){ return this.alienPositionList; }
+
     public Map<Enemy, List<Vector2D>> getAlienProjectilePositionList(){ return this.alienProjectilePositionList; }
+    
     
 }

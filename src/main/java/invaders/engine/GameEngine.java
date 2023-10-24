@@ -323,4 +323,8 @@ public class GameEngine {
         return elapsedTimeSeconds;
     }
 
+	public void restoreMemento(){
+		this.caretaker.restore();
+	}
+
 }
