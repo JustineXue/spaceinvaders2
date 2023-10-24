@@ -17,7 +17,6 @@ import invaders.entities.Player;
 import invaders.rendering.Renderable;
 import org.json.simple.JSONObject;
 import invaders.singleton.DifficultyManager;
-import javafx.util.Duration;
 import invaders.factory.EnemyProjectile;
 import invaders.physics.Vector2D;
 import invaders.memento.Memento;
