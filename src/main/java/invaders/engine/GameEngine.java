@@ -217,9 +217,13 @@ public class GameEngine {
 		return player;
 	}
 
+	public long getStartTime(){ return this.startTime; }
+
 	public void setStartTime(long startTime){
 		this.startTime = startTime;
 	}
+
+	public void setScore(int score){ this.score = score; }
 
 	public void calculateScore(Renderable ro){
 		String name = ro.getRenderableObjectName();
@@ -252,11 +256,6 @@ public class GameEngine {
 		if (ro instanceof Enemy){
 			this.killedAlienList.add((Enemy) ro);
 		} 
-	}
-
-	public void restoreAlienProjectiles(List<Vector2D> positions, Enemy e){
-		e.clearProjectiles(this);
-		e.addProjectiles(this, positions);
 	}
 
 	public List<EnemyProjectile> makeSlowProjectilesList(){
@@ -301,16 +300,16 @@ public class GameEngine {
 
 	public void saveMemento(){
 		Memento m = new Memento();
-		Map<Enemy, Vector2D> alienPositionList = new HashMap<Enemy, Vector2D>();
-		Map<Enemy, List<Vector2D>> projectilePositionList = new HashMap<Enemy, List<Vector2D>>();
+		Map<Enemy, Vector2D> alienPositionMap = new HashMap<Enemy, Vector2D>();
+		Map<Enemy, List<Vector2D>> projectilesPositionMap = new HashMap<Enemy, List<Vector2D>>();
 		for (GameObject go: gameObjects){
 			if (go instanceof Enemy){
 				Enemy e = (Enemy) go;
-				alienPositionList.put(e, e.getPosition());
-				projectilePositionList.put(e, e.getProjectilePositionsList());
+				alienPositionMap.put(e, new Vector2D(e.getPosition().getX(), e.getPosition().getY()));
+				projectilesPositionMap.put(e, e.getProjectilesPositionsList());
 			}
 		}
-		m.updateMemento(score, getElapsedTime(), alienPositionList, projectilePositionList);
+		m.updateMemento(score, getElapsedTime(), alienPositionMap, projectilesPositionMap);
 		this.caretaker.saveMemento(m);
 		System.out.println("Memento saved");
 	}
@@ -325,6 +324,46 @@ public class GameEngine {
 
 	public void restoreMemento(){
 		this.caretaker.restore();
+	}
+
+	public List<Enemy> makeAlienList(){
+		List<Enemy> enemyList = new ArrayList<Enemy>();
+		for (GameObject go: gameObjects){
+			if (go instanceof Enemy){
+				enemyList.add((Enemy) go);
+			}
+		}
+		return enemyList;
+	}
+
+	public void restoreAlienProjectiles(List<Vector2D> positions, Enemy e){
+		e.clearProjectiles(this);
+		e.addProjectiles(this, positions);
+	}
+
+	public void restoreAliens(Map<Enemy, Vector2D> alienPositionMap, Map<Enemy, List<Vector2D>> alienProjectilesPositionMap){
+		List<Enemy> enemyList = makeAlienList();
+		int alienCount = 0;
+		for (Enemy e: alienPositionMap.keySet()){
+			if (enemyList.contains(e)){
+				alienCount += 1;
+				e.resetPosition(alienPositionMap.get(e).getX(), alienPositionMap.get(e).getY());
+				e.setLives(1);
+				restoreAlienProjectiles(alienProjectilesPositionMap.get(e), e);
+				System.out.printf("Alien %d with xVel %d and %d projectiles restored%n", alienCount, e.getXVel(), alienProjectilesPositionMap.get(e).size());
+			} else if (killedAlienList.contains(e)) {
+				killedAlienList.remove(e);
+				alienCount += 1;
+				gameObjects.add((GameObject) e);
+				renderables.add((Renderable) e);
+				e.resetPosition(alienPositionMap.get(e).getX(), alienPositionMap.get(e).getY());
+				e.setLives(1);
+				restoreAlienProjectiles(alienProjectilesPositionMap.get(e), e);
+				System.out.printf("Revived Alien %d with xVel %d and %d projectiles restored%n", alienCount, e.getXVel(), alienProjectilesPositionMap.get(e).size());
+			} else {
+				System.out.printf("Missing alien %f, %f%n", e.getPosition().getX(), e.getPosition().getY());
+			}
+		}
 	}
 
 }

@@ -10,7 +10,6 @@ public abstract class Projectile implements Renderable, GameObject {
     private int lives = 1;
     private Vector2D position;
     private final Image image;
-    private String name;
 
     public Projectile(Vector2D position, Image image) {
         this.position = position;

@@ -168,11 +168,18 @@ public class Enemy implements GameObject, Renderable {
         }
     }
 
-    public List<Vector2D> getProjectilePositionsList(){
+    public List<Vector2D> getProjectilesPositionsList(){
         List<Vector2D> projectiles = new ArrayList<Vector2D>();
         for (Projectile p: enemyProjectile){
-            projectiles.add(p.getPosition());
+            projectiles.add(new Vector2D(p.getPosition().getX(), p.getPosition().getY()));
         }
         return projectiles;
+    }
+
+    public int getXVel(){ return this.xVel; }
+
+    public void resetPosition(double x, double y){
+        this.position.setX(x);
+        this.position.setY(y);
     }
 }

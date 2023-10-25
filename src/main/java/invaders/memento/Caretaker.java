@@ -21,26 +21,28 @@ public class Caretaker {
         } else {
             System.out.println("Restoring");
             checkMemento();
+            this.model.setScore(this.memento.getScore());
+            this.model.setStartTime(getNewStartTime(this.memento.getTime()));
+            this.model.restoreAliens(this.memento.getAlienPositionMap(), this.memento.getAlienProjectilesPositionMap());
         }
     }
 
     public void saveMemento(Memento m){
         this.memento = m;
-        // checkMemento();
     }
 
     public void checkMemento(){
         System.out.printf("Score is %d%n", this.memento.getScore());
         System.out.printf("Time is %f%n", this.memento.getTime());
-        Map<Enemy, Vector2D> alienList = this.memento.getAlienPositionList();
+        Map<Enemy, Vector2D> alienList = this.memento.getAlienPositionMap();
         System.out.printf("There are %d aliens%n", alienList.size());
         int alienCount = 0;
         for (Enemy e: alienList.keySet()){
             alienCount += 1;
             Vector2D position = alienList.get(e);
-            System.out.printf("Alien %d has position %f%, f%n", alienCount, position.getX(), position.getY());
+            System.out.printf("Alien %d has xVel %d position %f%, f%n", alienCount, e.getXVel(), position.getX(), position.getY());
         }
-        Map<Enemy, List<Vector2D>> alienProjectileList = this.memento.getAlienProjectilePositionList();
+        Map<Enemy, List<Vector2D>> alienProjectileList = this.memento.getAlienProjectilesPositionMap();
         alienCount = 0;
         for (Enemy e: alienProjectileList.keySet()){
             alienCount += 1;
@@ -52,6 +54,12 @@ public class Caretaker {
                 System.out.printf("Projectile %d has position %f, %f%n", projectileCount, p.getX(), p.getY());
             }
         }
+    }
+
+    public long getNewStartTime(double elapsedTime) {
+        long currentTime = System.currentTimeMillis();
+        long newStartTime = currentTime - (long) (elapsedTime * 1000.0);
+        return newStartTime;
     }
 
 }

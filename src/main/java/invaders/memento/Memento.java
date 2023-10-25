@@ -13,16 +13,16 @@ public class Memento {
 
     private int score = 0;
     private double time = 0;
-    private Map<Enemy, Vector2D> alienPositionList = new HashMap<Enemy, Vector2D>();
-    private Map<Enemy, List<Vector2D>> alienProjectilePositionList = new HashMap<Enemy, List<Vector2D>>();
+    private Map<Enemy, Vector2D> alienPositionMap = new HashMap<Enemy, Vector2D>();
+    private Map<Enemy, List<Vector2D>> alienProjectilesPositionMap = new HashMap<Enemy, List<Vector2D>>();
 
     public Memento(){}
 
-    public void updateMemento(int score, double time, Map<Enemy, Vector2D> alienPositionList, Map<Enemy, List<Vector2D>> alienProjectilePositionList){
+    public void updateMemento(int score, double time, Map<Enemy, Vector2D> alienPositionMap, Map<Enemy, List<Vector2D>> alienProjectilesPositionMap){
         this.score = score;
         this.time = time;
-        this.alienPositionList = alienPositionList;
-        this.alienProjectilePositionList = alienProjectilePositionList;
+        this.alienPositionMap = alienPositionMap;
+        this.alienProjectilesPositionMap = alienProjectilesPositionMap;
     }
 
     public void restore(GameWindow model, GameEngine engine){
@@ -33,9 +33,9 @@ public class Memento {
 
     public double getTime(){ return this.time; }
 
-    public Map<Enemy, Vector2D> getAlienPositionList(){ return this.alienPositionList; }
+    public Map<Enemy, Vector2D> getAlienPositionMap(){ return this.alienPositionMap; }
 
-    public Map<Enemy, List<Vector2D>> getAlienProjectilePositionList(){ return this.alienProjectilePositionList; }
+    public Map<Enemy, List<Vector2D>> getAlienProjectilesPositionMap(){ return this.alienProjectilesPositionMap; }
     
     
 }
