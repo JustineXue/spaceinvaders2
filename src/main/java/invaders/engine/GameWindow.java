@@ -20,6 +20,8 @@ import javafx.scene.text.Text;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
+import invaders.gameobject.Enemy;
+
 public class GameWindow {
 	private final int width;
     private final int height;
@@ -39,6 +41,9 @@ public class GameWindow {
     private Text timeText = new Text();
     private Text scoreText = new Text();
     private Text instructionsText = new Text();
+    private Text gameOverText = new Text();
+
+    private boolean gameOverDisplayed = false;
 
 	public GameWindow(GameEngine model){
         this.model = model;
@@ -75,12 +80,24 @@ public class GameWindow {
 	public void run() {
         this.model.setStartTime(System.currentTimeMillis());
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(17), t -> {
-            this.timeSubscriber.update(this);
-            this.scoreSubscriber.update(this);
-            this.draw();
-            this.updateTime();
-            this.updateScore();
-        }));
+            if (!gameOverDisplayed && this.model.isGameOver()){
+                if (this.model.getIsGameWon()){
+                    System.out.println("You won");
+                    displayGameOverText(true);
+                } else {
+                    System.out.println("Game over");
+                    displayGameOverText(false);
+                }
+                gameOverDisplayed = true;
+            } else if (!gameOverDisplayed) {
+                this.timeSubscriber.update(this);
+                this.scoreSubscriber.update(this);
+                this.draw();
+                this.updateTime();
+                this.updateScore();
+            } 
+        }
+        ));
          timeline.setCycleCount(Timeline.INDEFINITE);
          timeline.play();
     }
@@ -156,5 +173,27 @@ public class GameWindow {
     }
 
     public GameEngine getModel(){ return this.model; }
+
+    public void displayGameOverText(boolean isGameWon){
+        if (isGameWon){
+            gameOverText = new Text(width/2 - 50, height/2 - 30, "YOU WON");
+        } else {
+            gameOverText = new Text(width/2 - 50, height/2 - 30, "GAME OVER");
+        }
+        gameOverText.setFill(Color.WHITE);
+        Font font = Font.font("Arial", 24); 
+        gameOverText.setFont(font);
+        pane.getChildren().add(gameOverText);
+
+        timeText.setX(width/2 - 50);
+        timeText.setY(height/2);
+        timeText.setFont(font);
+
+        scoreText.setX(width/2 - 50);
+        scoreText.setY(height/2 + 30);
+        scoreText.setFont(font);
+
+        pane.getChildren().remove(instructionsText);
+    }
 
 }

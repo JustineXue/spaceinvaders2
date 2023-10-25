@@ -30,6 +30,7 @@ public class Caretaker {
 
     public void saveMemento(Memento m){
         this.memento = m;
+        checkMemento();
     }
 
     public void checkMemento(){

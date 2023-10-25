@@ -51,6 +51,8 @@ public class GameEngine {
 	private List<Enemy> killedAlienList = new ArrayList<Enemy>();
 	private Caretaker caretaker = new Caretaker(this);
 
+	private boolean isGameWon;
+
 	public GameEngine(String config){
 		// Read the config here
 
@@ -255,6 +257,7 @@ public class GameEngine {
 	public void saveKilled(Renderable ro){
 		if (ro instanceof Enemy){
 			this.killedAlienList.add((Enemy) ro);
+			System.out.println("Alien killed");
 		} 
 	}
 
@@ -314,8 +317,10 @@ public class GameEngine {
 		for (GameObject go: gameObjects){
 			if (go instanceof Enemy){
 				Enemy e = (Enemy) go;
-				alienPositionMap.put(e, new Vector2D(e.getPosition().getX(), e.getPosition().getY()));
-				projectilesPositionMap.put(e, e.getProjectilesPositionsList());
+				if (!killedAlienList.contains(e)){
+					alienPositionMap.put(e, new Vector2D(e.getPosition().getX(), e.getPosition().getY()));
+					projectilesPositionMap.put(e, e.getProjectilesPositionsList());
+				}
 			}
 		}
 		m.updateMemento(score, getElapsedTime(), alienPositionMap, projectilesPositionMap);
@@ -374,5 +379,43 @@ public class GameEngine {
 			}
 		}
 	}
+
+	public boolean aliensKilled(){
+		for (GameObject go: gameObjects){
+			if (go instanceof Enemy){
+				Enemy e = (Enemy) go;
+				if (e.isAlive()){
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	public boolean bunkersDestroyed(){
+		for (GameObject go: gameObjects){
+			if (go instanceof Bunker){
+				Bunker b = (Bunker) go;
+				if (b.isAlive()){
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	public boolean isGameOver(){
+		if (aliensKilled()){
+			this.isGameWon = true;
+			return true;
+		} else if (bunkersDestroyed() || !player.isAlive()){
+			this.isGameWon = false;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean getIsGameWon(){ return this.isGameWon; }
 
 }
