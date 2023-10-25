@@ -52,6 +52,8 @@ public class GameEngine {
 	private Caretaker caretaker = new Caretaker(this);
 
 	private boolean isGameWon;
+	private boolean aliensReachBottom = false;
+	private boolean aliensTouchPlayer = false;
 
 	public GameEngine(String config){
 		// Read the config here
@@ -110,12 +112,17 @@ public class GameEngine {
 						(renderableA.getRenderableObjectName().equals("EnemyProjectile") && renderableB.getRenderableObjectName().equals("EnemyProjectile"))){
 				}else{
 					if(renderableA.isColliding(renderableB) && (renderableA.getHealth()>0 && renderableB.getHealth()>0)) {
-						renderableA.takeDamage(1);
-						renderableB.takeDamage(1);
-						saveKilled(renderableA);
-						saveKilled(renderableB);
-						calculateScore(renderableA);
-						calculateScore(renderableB);
+						if (renderableA.getRenderableObjectName().equals("Enemy") && renderableB.getRenderableObjectName().equals("Player") ||
+						renderableA.getRenderableObjectName().equals("Player") && renderableB.getRenderableObjectName().equals("Enemy")){
+							aliensTouchPlayer = true;
+						} else {
+							renderableA.takeDamage(1);
+							renderableB.takeDamage(1);
+							saveKilled(renderableA);
+							saveKilled(renderableB);
+							calculateScore(renderableA);
+							calculateScore(renderableB);
+						}
 					}
 				}
 			}
@@ -138,6 +145,9 @@ public class GameEngine {
 
 			if(ro.getPosition().getY() + ro.getHeight() >= gameHeight) {
 				ro.getPosition().setY((gameHeight - offset) -ro.getHeight());
+				if (ro instanceof Enemy){
+					aliensReachBottom = true;
+				}
 			}
 
 			if(ro.getPosition().getY() <= 0) {
@@ -392,23 +402,11 @@ public class GameEngine {
 		return true;
 	}
 
-	public boolean bunkersDestroyed(){
-		for (GameObject go: gameObjects){
-			if (go instanceof Bunker){
-				Bunker b = (Bunker) go;
-				if (b.isAlive()){
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
 	public boolean isGameOver(){
 		if (aliensKilled()){
 			this.isGameWon = true;
 			return true;
-		} else if (bunkersDestroyed() || !player.isAlive()){
+		} else if (aliensReachBottom || !player.isAlive() || aliensTouchPlayer){
 			this.isGameWon = false;
 			return true;
 		} else {

@@ -20,8 +20,6 @@ import javafx.scene.text.Text;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
-import invaders.gameobject.Enemy;
-
 public class GameWindow {
 	private final int width;
     private final int height;
