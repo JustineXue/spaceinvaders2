@@ -16,7 +16,6 @@ import invaders.gameobject.GameObject;
 import invaders.entities.Player;
 import invaders.rendering.Renderable;
 import org.json.simple.JSONObject;
-import invaders.singleton.DifficultyManager;
 import invaders.factory.EnemyProjectile;
 import invaders.physics.Vector2D;
 import invaders.memento.Memento;
@@ -45,9 +44,6 @@ public class GameEngine {
 	private int score = 0;
 	private long startTime;
 
-	private DifficultyManager levelManager = new DifficultyManager();
-	private ConfigReader configReader;
-
 	private List<Enemy> killedAlienList = new ArrayList<Enemy>();
 	private Caretaker caretaker = new Caretaker();
 
@@ -57,12 +53,11 @@ public class GameEngine {
 
 	public GameEngine(String config){
 		// Read the config here
-
-		this.levelManager.changeInstance(config);
-		this.configReader = levelManager.getInstance();
+		ConfigReader configReader = ConfigReader.getInstance();
+		configReader.parse(config);
 
 		// Get game width and height
-		gameWidth = ((Long)((JSONObject) this.configReader.getGameInfo().get("size")).get("x")).intValue();
+		gameWidth = ((Long)((JSONObject) configReader.getGameInfo().get("size")).get("x")).intValue();
 		gameHeight = ((Long)((JSONObject) configReader.getGameInfo().get("size")).get("y")).intValue();
 
 		//Get player info
