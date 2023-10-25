@@ -25,10 +25,6 @@ public class Memento {
         this.alienProjectilesPositionMap = alienProjectilesPositionMap;
     }
 
-    public void restore(GameWindow model, GameEngine engine){
-        System.out.println("Restoring previous saved state");
-    }
-
     public int getScore(){ return this.score; }
 
     public double getTime(){ return this.time; }
