@@ -22,7 +22,8 @@ public class Caretaker {
             System.out.println("Restoring");
             checkMemento();
             this.model.setScore(this.memento.getScore());
-            this.model.setStartTime(getNewStartTime(this.memento.getTime()));
+            this.model.setStartTime(getNewStartTime(this.memento.getTime()));      
+            this.model.removeAllProjectiles();      
             this.model.restoreAliens(this.memento.getAlienPositionMap(), this.memento.getAlienProjectilesPositionMap());
         }
     }

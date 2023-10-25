@@ -298,6 +298,15 @@ public class GameEngine {
 		}
 	}
 
+	public void removeAllProjectiles(){
+		for (GameObject go: gameObjects){
+			if (go instanceof EnemyProjectile){
+				EnemyProjectile p = (EnemyProjectile) go;
+				p.takeDamage(1); 
+			}
+		}
+	}
+
 	public void saveMemento(){
 		Memento m = new Memento();
 		Map<Enemy, Vector2D> alienPositionMap = new HashMap<Enemy, Vector2D>();
