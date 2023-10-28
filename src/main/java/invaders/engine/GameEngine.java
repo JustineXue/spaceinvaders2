@@ -19,6 +19,9 @@ import org.json.simple.JSONObject;
 import invaders.factory.EnemyProjectile;
 import invaders.physics.Vector2D;
 import invaders.memento.Memento;
+import invaders.observer.ScoreObserver;
+import invaders.observer.Observer;
+import invaders.observer.TimeObserver;
 import invaders.memento.Caretaker;
 
 /**
@@ -51,6 +54,8 @@ public class GameEngine {
 	private boolean aliensReachBottom = false;
 	private boolean aliensTouchPlayer = false;
 
+	private List<Observer> observers = new ArrayList<>();
+
 	public GameEngine(String config){
 		// Read the config here
 		ConfigReader configReader = ConfigReader.getInstance();
@@ -82,13 +87,17 @@ public class GameEngine {
 			gameObjects.add(enemy);
 			renderables.add(enemy);
 		}
-
+        setStartTime(System.currentTimeMillis());
+		attach((Observer) new TimeObserver());
+		attach((Observer) new ScoreObserver());
+		notifyObservers();
 	}
 
 	/**
 	 * Updates the game/simulation
 	 */
 	public void update(){
+		notifyObservers();
 		timer+=1;
 
 		movePlayer();
@@ -414,4 +423,17 @@ public class GameEngine {
         return newStartTime;
     }
 
+	public List<Observer> getObservers(){ return this.observers; }
+
+	public void attach(Observer observer){
+		observers.add(observer);
+	}
+
+	public void notifyObservers(){
+		for (Observer observer: observers){
+			observer.update(this);
+		}
+	}
 }
+
+

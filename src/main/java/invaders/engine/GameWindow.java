@@ -9,13 +9,11 @@ import javafx.util.Duration;
 
 import invaders.entities.EntityView;
 import invaders.rendering.Renderable;
+import invaders.observer.Observer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
-import invaders.observer.Subscriber;
-import invaders.observer.TimeSubscriber;
-import invaders.observer.ScoreSubscriber;
 import javafx.scene.text.Text;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -32,9 +30,6 @@ public class GameWindow {
     private double xViewportOffset = 0.0;
     private double yViewportOffset = 0.0;
     // private static final double VIEWPORT_MARGIN = 280.0;
-
-    private Subscriber timeSubscriber = new TimeSubscriber();
-    private Subscriber scoreSubscriber = new ScoreSubscriber();
 
     private Text timeText = new Text();
     private Text scoreText = new Text();
@@ -76,7 +71,6 @@ public class GameWindow {
     }
 
 	public void run() {
-        this.model.setStartTime(System.currentTimeMillis());
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(17), t -> {
             if (!gameOverDisplayed && this.model.isGameOver()){
                 if (this.model.getIsGameWon()){
@@ -88,8 +82,6 @@ public class GameWindow {
                 }
                 gameOverDisplayed = true;
             } else if (!gameOverDisplayed) {
-                this.timeSubscriber.update(this);
-                this.scoreSubscriber.update(this);
                 this.draw();
                 this.updateTime();
                 this.updateScore();
@@ -154,20 +146,14 @@ public class GameWindow {
         return scene;
     }
 
-    public String getTimeDisplay(){
-        return this.timeSubscriber.getDisplayString();
-    }
-
-    public String getScoreDisplay(){
-        return this.scoreSubscriber.getDisplayString();
-    }
-
     public void updateTime(){
-        this.timeText.setText(getTimeDisplay());
+        Observer time = this.model.getObservers().get(0);
+        this.timeText.setText(time.getDisplayString());
     }
 
     public void updateScore(){
-        this.scoreText.setText(getScoreDisplay());
+        Observer score = this.model.getObservers().get(1);
+        this.scoreText.setText(score.getDisplayString());
     }
 
     public GameEngine getModel(){ return this.model; }
