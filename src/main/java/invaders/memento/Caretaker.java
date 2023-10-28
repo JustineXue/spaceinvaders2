@@ -16,3 +16,4 @@ public class Caretaker {
     public void setMemento(Memento m){this.memento = m; }
 
 }
+

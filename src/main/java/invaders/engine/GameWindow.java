@@ -9,7 +9,7 @@ import javafx.util.Duration;
 
 import invaders.entities.EntityView;
 import invaders.rendering.Renderable;
-import invaders.observer.Observer;
+import invaders.observer.Subscriber;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.Scene;
@@ -147,12 +147,12 @@ public class GameWindow {
     }
 
     public void updateTime(){
-        Observer time = this.model.getObservers().get(0);
+        Subscriber time = this.model.getSubscribers().get(0);
         this.timeText.setText(time.getDisplayString());
     }
 
     public void updateScore(){
-        Observer score = this.model.getObservers().get(1);
+        Subscriber score = this.model.getSubscribers().get(1);
         this.scoreText.setText(score.getDisplayString());
     }
 

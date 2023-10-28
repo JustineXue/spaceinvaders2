@@ -19,9 +19,9 @@ import org.json.simple.JSONObject;
 import invaders.factory.EnemyProjectile;
 import invaders.physics.Vector2D;
 import invaders.memento.Memento;
-import invaders.observer.ScoreObserver;
-import invaders.observer.Observer;
-import invaders.observer.TimeObserver;
+import invaders.observer.ScoreSubscriber;
+import invaders.observer.Subscriber;
+import invaders.observer.TimeSubscriber;
 import invaders.memento.Caretaker;
 
 /**
@@ -54,9 +54,18 @@ public class GameEngine {
 	private boolean aliensReachBottom = false;
 	private boolean aliensTouchPlayer = false;
 
-	private List<Observer> observers = new ArrayList<>();
+	private String currentDifficulty = "";
+
+	private List<Subscriber> subscribers = new ArrayList<>();
 
 	public GameEngine(String config){
+		if (config.equals("src/main/resources/config_easy.json")){
+			currentDifficulty = "easy";
+		} else if (config.equals("src/main/resources/config_medium.json")){
+			currentDifficulty = "medium";
+		} else if (config.equals("src/main/resources/config_hard.json")){
+			currentDifficulty = "hard";
+		}
 		// Read the config here
 		ConfigReader configReader = ConfigReader.getInstance();
 		configReader.parse(config);
@@ -88,16 +97,16 @@ public class GameEngine {
 			renderables.add(enemy);
 		}
         setStartTime(System.currentTimeMillis());
-		attach((Observer) new TimeObserver());
-		attach((Observer) new ScoreObserver());
-		notifyObservers();
+		attach((Subscriber) new TimeSubscriber());
+		attach((Subscriber) new ScoreSubscriber());
+		notifySubscribers();
 	}
 
 	/**
 	 * Updates the game/simulation
 	 */
 	public void update(){
-		notifyObservers();
+		notifySubscribers();
 		timer+=1;
 
 		movePlayer();
@@ -113,12 +122,21 @@ public class GameEngine {
 
 				if((renderableA.getRenderableObjectName().equals("Enemy") && renderableB.getRenderableObjectName().equals("EnemyProjectile"))
 						||(renderableA.getRenderableObjectName().equals("EnemyProjectile") && renderableB.getRenderableObjectName().equals("Enemy"))||
-						(renderableA.getRenderableObjectName().equals("EnemyProjectile") && renderableB.getRenderableObjectName().equals("EnemyProjectile"))){
+						(renderableA.getRenderableObjectName().equals("EnemyProjectile") && renderableB.getRenderableObjectName().equals("EnemyProjectile"))||
+						renderableA.getRenderableObjectName().equals("Bunker") && renderableB.getRenderableObjectName().equals("PlayerProjectile")||
+						renderableA.getRenderableObjectName().equals("PlayerProjectile") && renderableB.getRenderableObjectName().equals("Bunker")){
 				}else{
 					if(renderableA.isColliding(renderableB) && (renderableA.getHealth()>0 && renderableB.getHealth()>0)) {
 						if (renderableA.getRenderableObjectName().equals("Enemy") && renderableB.getRenderableObjectName().equals("Player") ||
 						renderableA.getRenderableObjectName().equals("Player") && renderableB.getRenderableObjectName().equals("Enemy")){
 							aliensTouchPlayer = true;
+						} else if (renderableA.getRenderableObjectName().equals("Bunker") && renderableB.getRenderableObjectName().equals("EnemyProjectile") ||
+						renderableA.getRenderableObjectName().equals("EnemyProjectile") && renderableB.getRenderableObjectName().equals("Bunker")){
+							renderableA.takeDamage(1);
+							renderableB.takeDamage(1);
+						} else if (renderableA.getRenderableObjectName().equals("Player") || renderableB.getRenderableObjectName().equals("Player")) {
+							renderableA.takeDamage(1);
+							renderableB.takeDamage(1);
 						} else {
 							renderableA.takeDamage(1);
 							renderableB.takeDamage(1);
@@ -423,15 +441,126 @@ public class GameEngine {
         return newStartTime;
     }
 
-	public List<Observer> getObservers(){ return this.observers; }
+	public List<Subscriber> getSubscribers(){ return this.subscribers; }
 
-	public void attach(Observer observer){
-		observers.add(observer);
+	public void attach(Subscriber subscriber){
+		subscribers.add(subscriber);
 	}
 
-	public void notifyObservers(){
-		for (Observer observer: observers){
-			observer.update(this);
+	public void notifySubscribers(){
+		for (Subscriber subscriber: subscribers){
+			subscriber.update(this);
+		}
+	}
+
+	public void killAll(){
+		for (Renderable ro: renderables){
+			if (ro instanceof Player){
+				continue;
+			} else if (ro instanceof Bunker) {
+				ro.takeDamage(3);
+			} else {
+				ro.takeDamage(1);
+			}
+		}
+	}
+
+	public void switchEasy(){
+		if (currentDifficulty.equals("easy")){
+			return;
+		}
+		currentDifficulty = "easy";
+		caretaker.setMemento(null);
+		killAll();
+
+		ConfigReader configReader = ConfigReader.getInstance();
+		configReader.parse("src/main/resources/config_easy.json");
+
+		//Get player info
+		// this.player = new Player(configReader.getPlayerInfo());
+		// renderables.add(player);
+
+		Director director = new Director();
+		BunkerBuilder bunkerBuilder = new BunkerBuilder();
+		//Get Bunkers info
+		for(Object eachBunkerInfo:configReader.getBunkersInfo()){
+			Bunker bunker = director.constructBunker(bunkerBuilder, (JSONObject) eachBunkerInfo);
+			gameObjects.add(bunker);
+			renderables.add(bunker);
+		}
+
+		EnemyBuilder enemyBuilder = new EnemyBuilder();
+		//Get Enemy info
+		for(Object eachEnemyInfo:configReader.getEnemiesInfo()){
+			Enemy enemy = director.constructEnemy(this,enemyBuilder,(JSONObject)eachEnemyInfo);
+			gameObjects.add(enemy);
+			renderables.add(enemy);
+		}
+	}
+
+	public void switchMedium(){
+		if (currentDifficulty.equals("medium")){
+			return;
+		}
+		currentDifficulty = "medium";
+		caretaker.setMemento(null);
+		killAll();
+
+		ConfigReader configReader = ConfigReader.getInstance();
+		configReader.parse("src/main/resources/config_medium.json");
+
+		//Get player info
+		// this.player = new Player(configReader.getPlayerInfo());
+		// renderables.add(player);
+
+		Director director = new Director();
+		BunkerBuilder bunkerBuilder = new BunkerBuilder();
+		//Get Bunkers info
+		for(Object eachBunkerInfo:configReader.getBunkersInfo()){
+			Bunker bunker = director.constructBunker(bunkerBuilder, (JSONObject) eachBunkerInfo);
+			gameObjects.add(bunker);
+			renderables.add(bunker);
+		}
+
+		EnemyBuilder enemyBuilder = new EnemyBuilder();
+		//Get Enemy info
+		for(Object eachEnemyInfo:configReader.getEnemiesInfo()){
+			Enemy enemy = director.constructEnemy(this,enemyBuilder,(JSONObject)eachEnemyInfo);
+			gameObjects.add(enemy);
+			renderables.add(enemy);
+		}
+	}
+
+	public void switchHard(){
+		if (currentDifficulty.equals("hard")){
+			return;
+		}
+		currentDifficulty = "hard";
+		caretaker.setMemento(null);
+		killAll();
+
+		ConfigReader configReader = ConfigReader.getInstance();
+		configReader.parse("src/main/resources/config_hard.json");
+
+		//Get player info
+		// this.player = new Player(configReader.getPlayerInfo());
+		// renderables.add(player);
+
+		Director director = new Director();
+		BunkerBuilder bunkerBuilder = new BunkerBuilder();
+		//Get Bunkers info
+		for(Object eachBunkerInfo:configReader.getBunkersInfo()){
+			Bunker bunker = director.constructBunker(bunkerBuilder, (JSONObject) eachBunkerInfo);
+			gameObjects.add(bunker);
+			renderables.add(bunker);
+		}
+
+		EnemyBuilder enemyBuilder = new EnemyBuilder();
+		//Get Enemy info
+		for(Object eachEnemyInfo:configReader.getEnemiesInfo()){
+			Enemy enemy = director.constructEnemy(this,enemyBuilder,(JSONObject)eachEnemyInfo);
+			gameObjects.add(enemy);
+			renderables.add(enemy);
 		}
 	}
 }

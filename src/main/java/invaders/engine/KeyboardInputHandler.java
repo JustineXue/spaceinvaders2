@@ -19,6 +19,9 @@ class KeyboardInputHandler {
     private boolean removeSlow = false;
     private boolean removeFast = false;
     private boolean undo = false;
+    private boolean switchEasy = false;
+    private boolean switchMedium = false;
+    private boolean switchHard = false;
 
     private Map<String, MediaPlayer> sounds = new HashMap<>();
 
@@ -63,6 +66,15 @@ class KeyboardInputHandler {
         if (keyEvent.getCode().equals(KeyCode.U)){
             undo = true;
         }
+        if (keyEvent.getCode().equals(KeyCode.E)){
+            switchEasy = true;
+        }
+        if (keyEvent.getCode().equals(KeyCode.M)){
+            switchMedium = true;
+        }
+        if (keyEvent.getCode().equals(KeyCode.H)){
+            switchHard = true;
+        }
 
         if (left) {
             model.leftPressed();
@@ -73,16 +85,22 @@ class KeyboardInputHandler {
         }
 
         if(removeSlow){
-            System.out.println("CHEAT: Remove Slow Projectiles triggered");
             this.model.removeSlowProjectiles();
         }
         if(removeFast){
-            System.out.println("CHEAT: Remove Fast Projectiles triggered");
             this.model.removeFastProjectiles();
         }
         if(undo){
-            System.out.println("Undo triggered");
             this.model.restoreMemento();
+        }
+        if(switchEasy){
+            this.model.switchEasy();
+        }
+        if(switchMedium){
+            this.model.switchMedium();
+        }
+        if(switchHard){
+            this.model.switchHard();
         }
     }
 
@@ -104,6 +122,15 @@ class KeyboardInputHandler {
             removeFast = false;
         }
         if (keyEvent.getCode().equals(KeyCode.U)){
+            undo = false;
+        }
+        if (keyEvent.getCode().equals(KeyCode.E)){
+            removeSlow = false;
+        }
+        if (keyEvent.getCode().equals(KeyCode.M)){
+            removeFast = false;
+        }
+        if (keyEvent.getCode().equals(KeyCode.H)){
             undo = false;
         }
     }
