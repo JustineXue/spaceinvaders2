@@ -125,13 +125,13 @@ class KeyboardInputHandler {
             undo = false;
         }
         if (keyEvent.getCode().equals(KeyCode.E)){
-            removeSlow = false;
+            switchEasy = false;
         }
         if (keyEvent.getCode().equals(KeyCode.M)){
-            removeFast = false;
+            switchMedium = false;
         }
         if (keyEvent.getCode().equals(KeyCode.H)){
-            undo = false;
+            switchHard = false;
         }
     }
 }

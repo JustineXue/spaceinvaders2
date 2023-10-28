@@ -57,6 +57,7 @@ public class GameEngine {
 	private String currentDifficulty = "";
 
 	private List<Subscriber> subscribers = new ArrayList<>();
+	private long lastRestartTime = System.currentTimeMillis();
 
 	public GameEngine(String config){
 		if (config.equals("src/main/resources/config_easy.json")){
@@ -366,6 +367,14 @@ public class GameEngine {
         return elapsedTimeSeconds;
     }
 
+	public double getLastRestartElapsedTime() {
+        // Calculate and return the elapsed time since the game started
+        long currentTime = System.currentTimeMillis();
+        long elapsedTimeMillis = currentTime - lastRestartTime;
+        double elapsedTimeSeconds = (double) elapsedTimeMillis / 1000.0;
+        return elapsedTimeSeconds;
+    }
+
 	public List<Enemy> makeAlienList(){
 		List<Enemy> enemyList = new ArrayList<Enemy>();
 		for (GameObject go: gameObjects){
@@ -468,6 +477,8 @@ public class GameEngine {
 	public void switchEasy(){
 		if (currentDifficulty.equals("easy")){
 			return;
+		} else if (getLastRestartElapsedTime() < 1){
+			return;
 		}
 		currentDifficulty = "easy";
 		caretaker.setMemento(null);
@@ -496,10 +507,13 @@ public class GameEngine {
 			gameObjects.add(enemy);
 			renderables.add(enemy);
 		}
+		lastRestartTime = System.currentTimeMillis();
 	}
 
 	public void switchMedium(){
 		if (currentDifficulty.equals("medium")){
+			return;
+		} else if (getLastRestartElapsedTime() < 1){
 			return;
 		}
 		currentDifficulty = "medium";
@@ -529,10 +543,13 @@ public class GameEngine {
 			gameObjects.add(enemy);
 			renderables.add(enemy);
 		}
+		lastRestartTime = System.currentTimeMillis();
 	}
 
 	public void switchHard(){
 		if (currentDifficulty.equals("hard")){
+			return;
+		} else if (getLastRestartElapsedTime() < 1){
 			return;
 		}
 		currentDifficulty = "hard";
@@ -562,6 +579,7 @@ public class GameEngine {
 			gameObjects.add(enemy);
 			renderables.add(enemy);
 		}
+		lastRestartTime = System.currentTimeMillis();
 	}
 }
 
